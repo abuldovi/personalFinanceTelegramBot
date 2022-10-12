@@ -81,8 +81,6 @@ public class TransactionService {
         return transactionRepository.getByMonthAndByYearAndSource(chatId, Integer.parseInt(month), Integer.parseInt(year), source);
     }
 
-
-
     public List<Integer> findYears(long chatId){
         return transactionRepository.getYears(chatId);
     }
