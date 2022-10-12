@@ -135,6 +135,7 @@ public enum Emoji {
     SUN_WITH_FACE('\uD83C', '\uDF1E'),
     FOGGY('\uD83C', '\uDF01'),
     CLOUD(null, '\u2601'),
+    HOUSE('\uD83C', '\uDFE0'),
 
 
     // Others
@@ -160,6 +161,7 @@ public enum Emoji {
     WAVING_HAND_SIGN('\uD83D', '\uDC4B'),
     CANCELLATION_X('\uD83D', '\uDDD9'),
     MONEY_WITH_WINGS('\uD83D', '\uDCB8');
+
 
     Character firstChar;
     Character secondChar;

@@ -25,19 +25,26 @@ public class Keyboards {
         return buttonList;
     }
 
-    public List<List<InlineKeyboardButton>> getExpensesKeyboard() {
+    public List<List<InlineKeyboardButton>> getExpensesKeyboard(boolean shortVersion) {
 
         buttonList.clear();
 
-        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("Yearly").callbackData("yearly").build()));
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("️Yearly").callbackData("yearly").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("Different month").callbackData("difMonth").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("This month").callbackData("thisMonth").build()));
 
-        addCancel();
+        if(!shortVersion){
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("By category").callbackData("category").build()));
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("By source").callbackData("source").build()));
+        }
+
+        addHome();
 
         return buttonList;
 
     }
+
+
 
     public List<List<InlineKeyboardButton>> getCategoryKeyboard() {
 
@@ -50,7 +57,7 @@ public class Keyboards {
                     .build()));
         }
 
-        addCancel();
+        addHome();
 
         return buttonList;
 
@@ -67,7 +74,7 @@ public class Keyboards {
                     .build()));
         }
 
-        addCancel();
+        addHome();
 
         return buttonList;
     }
@@ -83,7 +90,7 @@ public class Keyboards {
                     .build()));
         }
 
-        addCancel();
+        addHome();
 
         return buttonList;
     }
@@ -101,24 +108,24 @@ public class Keyboards {
                     .build()));
         }
 
-        addCancel();
+        addHome();
 
         return buttonList;
     }
 
-    public List<List<InlineKeyboardButton>> getCancelKeyboard() {
+    public List<List<InlineKeyboardButton>> getHomeKeyboard() {
 
         buttonList.clear();
 
-        addCancel();
+        addHome();
 
         return buttonList;
     }
 
 
-    public void addCancel(){
+    public void addHome(){
         buttonList.add(Collections.singletonList(
-                InlineKeyboardButton.builder().text( Emoji.CROSS_MARK + " Cancel").callbackData("cancel").build()
+                InlineKeyboardButton.builder().text( Emoji.HOUSE + " Home").callbackData("cancel").build()
         ));
     }
 }

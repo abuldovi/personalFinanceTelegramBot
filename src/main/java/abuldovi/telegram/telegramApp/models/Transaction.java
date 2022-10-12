@@ -1,8 +1,9 @@
 package abuldovi.telegram.telegramApp.models;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Calendar;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import java.util.Date;
 
 @Entity
@@ -15,6 +16,7 @@ public class Transaction {
 
     @Column(name = "chat_id")
     private long chatId;
+
     @Column(name = "category")
     private String category;
 
@@ -23,6 +25,9 @@ public class Transaction {
     private Date timestamp;
     @Column(name = "source")
     private String source;
+
+    @Min(value = 0, message = "Should be more than 0")
+    @Max(value = Integer.MAX_VALUE, message = "Too big number")
     @Column(name = "value")
     private int value;
 
