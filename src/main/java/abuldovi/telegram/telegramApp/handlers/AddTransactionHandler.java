@@ -6,8 +6,12 @@ import abuldovi.telegram.telegramApp.service.TransactionService;
 import abuldovi.telegram.telegramApp.util.BotStateMenu;
 import abuldovi.telegram.telegramApp.util.TransactionState;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+
+import java.util.List;
 
 @Component
 public class AddTransactionHandler {
@@ -29,12 +33,7 @@ public class AddTransactionHandler {
 
         botStateMenu.changeBotState(chatId, BotState.ADDVALUE);
 
-        return EditMessageText.builder()
-                .chatId(String.valueOf(chatId))
-                .messageId(messageId)
-                .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getHomeKeyboard()).build())
-                .text("Please enter the number")
-                .build();
+        return editMessageTextBuilder(chatId, messageId, "Please enter the number", keyboards.getHomeKeyboard());
 
     }
 
@@ -42,12 +41,7 @@ public class AddTransactionHandler {
 
         botStateMenu.changeBotState(chatId, BotState.ADDSOURCE);
 
-        return EditMessageText.builder()
-                .messageId(messageId)
-                .chatId(String.valueOf(chatId))
-                .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getSourceKeyboard()).build())
-                .text("Choose the category")
-                .build();
+        return editMessageTextBuilder(chatId, messageId, "Choose the category", keyboards.getSourceKeyboard());
 
 
     }
@@ -64,21 +58,30 @@ public class AddTransactionHandler {
 
         editMessageText.setText("Transaction successfully added");
 
-        return  editMessageText;
+        return editMessageText;
     }
 
     public EditMessageText startEdit(long chatId, int messageId) {
 
-        EditMessageText message = EditMessageText.builder()
-                .chatId(String.valueOf(chatId))
-                .messageId(messageId)
-                .text("Choose the option")
-                .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getStartKeyboard()).build())
-                .build();
+        EditMessageText message = editMessageTextBuilder(chatId, messageId, "Choose the option", keyboards.getStartKeyboard());
 
         botStateMenu.changeBotState(chatId, BotState.START);
 
         return message;
+
+    }
+
+    public SendMessage showCategory(long chatId) {
+
+        botStateMenu.changeBotState(chatId, BotState.ADDCATEGORY);
+
+        return SendMessage.builder().chatId(String.valueOf(chatId)).replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getCategoryKeyboard()).build()).text("Choose the category").build();
+
+    }
+
+    public EditMessageText editMessageTextBuilder(long chatId, int messageId, String text, List<List<InlineKeyboardButton>> keyboard) {
+
+        return EditMessageText.builder().chatId(String.valueOf(chatId)).messageId(messageId).text(text).replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboard).build()).build();
 
     }
 

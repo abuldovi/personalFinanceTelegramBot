@@ -4,7 +4,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "finance")
@@ -20,9 +21,8 @@ public class Transaction {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    @Column(name = "timestamp", columnDefinition = "TIMESTAMP")
+    private LocalDateTime timestamp;
     @Column(name = "source")
     private String source;
 
@@ -71,11 +71,11 @@ public class Transaction {
         this.value = value;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 }

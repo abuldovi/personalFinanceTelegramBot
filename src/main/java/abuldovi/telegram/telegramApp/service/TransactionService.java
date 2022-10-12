@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class TransactionService {
     @Transactional
     public Transaction save(long chatId, Transaction transaction){
         transaction.setChatId(chatId);
-        transaction.setTimestamp(new Date());
+        transaction.setTimestamp(LocalDateTime.now());
         System.out.println(transaction.getValue());
         return transactionRepository.save(transaction);
     }

@@ -2,7 +2,9 @@ package abuldovi.telegram.telegramApp.handlers;
 
 import abuldovi.telegram.telegramApp.enums.BotState;
 import abuldovi.telegram.telegramApp.models.Transaction;
-import abuldovi.telegram.telegramApp.util.*;
+import abuldovi.telegram.telegramApp.util.BotStateMenu;
+import abuldovi.telegram.telegramApp.util.RequestState;
+import abuldovi.telegram.telegramApp.util.TransactionState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -39,12 +41,12 @@ public class MenuHandler {
 
         String data = callbackQuery.getData();
 
-        if (data.equals("cancel")){
+        if (data.equals("cancel")) {
             transactionState.removeTransactionState(chatId);
-            return addTransactionHandler.startEdit(chatId, (int)messageId);
+            return addTransactionHandler.startEdit(chatId, (int) messageId);
         }
 
-        if(botStateMenu.containsChatId(chatId)) {
+        if (botStateMenu.containsChatId(chatId)) {
             if (botStateMenu.getBotState(chatId).equals(BotState.ADDCATEGORY)) {
                 Transaction transaction = transactionState.getTransactionState(chatId);
                 transaction.setCategory(callbackQuery.getData());
@@ -65,7 +67,7 @@ public class MenuHandler {
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.SELECTMONTH)
                     || botStateMenu.getBotState(chatId).equals(BotState.CATEGORYSELECTMONTH)
-                    || botStateMenu.getBotState(chatId).equals(BotState.SOURCESELECTMONTH)) {;
+                    || botStateMenu.getBotState(chatId).equals(BotState.SOURCESELECTMONTH)) {
                 return showTransactionsHandler.showMonthResult(chatId, (int) messageId, data, requestState.getRequest(chatId).getYear());
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.SHOWYEARS)
@@ -104,32 +106,36 @@ public class MenuHandler {
         }
 
         switch (data) {
-            case "start": return addTransactionHandler.startEdit(chatId, (int)messageId);
-            case "showExpense": return showTransactionsHandler.showExpenses(chatId, (int)messageId);
-            case "addExpense": return addTransactionHandler.addExpenses(chatId, (int)messageId);
-            case "test": return showTransactionsHandler.test(chatId, (int)messageId);
-            default: return EditMessageText.builder().chatId(chatId).messageId((int)messageId).text("Smth wrong").build();
+            case "start":
+                return addTransactionHandler.startEdit(chatId, (int) messageId);
+            case "showExpense":
+                return showTransactionsHandler.showExpenses(chatId, (int) messageId);
+            case "addExpense":
+                return addTransactionHandler.addExpenses(chatId, (int) messageId);
+            case "test":
+                return showTransactionsHandler.test(chatId, (int) messageId);
+            default:
+                return EditMessageText.builder().chatId(chatId).messageId((int) messageId).text("Smth wrong").build();
         }
     }
 
-    public SendMessage handleMessage(Message message){
+    public SendMessage handleMessage(Message message) {
         long chatId = message.getChatId();
         SendMessage sendMessageText = SendMessage.builder()
                 .chatId(chatId)
                 .text("Wrong command")
                 .build();
 
-        switch (botStateMenu.getBotState(chatId)) {
-            case ADDVALUE:
-                try {
-                    Transaction transaction = new Transaction();
-                    transaction.setValue(Integer.parseInt(message.getText()));
-                    transactionState.changeTransactionState(chatId, transaction);
-                    sendMessageText = showTransactionsHandler.showCategory(chatId);
-                } catch (NumberFormatException e){
-                    sendMessageText.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getHomeKeyboard()).build());
-                    sendMessageText.setText("Type a number!");
-                }
+        if (botStateMenu.getBotState(chatId) == BotState.ADDVALUE) {
+            try {
+                Transaction transaction = new Transaction();
+                transaction.setValue(Integer.parseInt(message.getText()));
+                transactionState.changeTransactionState(chatId, transaction);
+                sendMessageText = addTransactionHandler.showCategory(chatId);
+            } catch (NumberFormatException e) {
+                sendMessageText.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getHomeKeyboard()).build());
+                sendMessageText.setText("Type a number!");
+            }
         }
 
         return sendMessageText;
