@@ -1,6 +1,7 @@
 package abuldovi.telegram.telegramApp.handlers;
 
 import abuldovi.telegram.telegramApp.enums.BotState;
+import abuldovi.telegram.telegramApp.exception.TransactionNullValueException;
 import abuldovi.telegram.telegramApp.models.Transaction;
 import abuldovi.telegram.telegramApp.util.BotStateMenu;
 import abuldovi.telegram.telegramApp.util.RequestState;
@@ -20,16 +21,18 @@ public class MenuHandler {
     private final BotStateMenu botStateMenu;
     private final Keyboards keyboards;
     private final RequestState requestState;
+    private final EditTransactionHandler editTransactionHandler;
 
     private final AddTransactionHandler addTransactionHandler;
     private final ShowTransactionsHandler showTransactionsHandler;
 
     @Autowired
-    public MenuHandler(TransactionState transactionState, BotStateMenu botStateMenu, Keyboards keyboards, RequestState requestState, AddTransactionHandler addTransactionHandler, ShowTransactionsHandler showTransactionsHandler) {
+    public MenuHandler(TransactionState transactionState, BotStateMenu botStateMenu, Keyboards keyboards, RequestState requestState, EditTransactionHandler editTransactionHandler, AddTransactionHandler addTransactionHandler, ShowTransactionsHandler showTransactionsHandler) {
         this.transactionState = transactionState;
         this.botStateMenu = botStateMenu;
         this.keyboards = keyboards;
         this.requestState = requestState;
+        this.editTransactionHandler = editTransactionHandler;
         this.addTransactionHandler = addTransactionHandler;
         this.showTransactionsHandler = showTransactionsHandler;
     }
@@ -81,8 +84,28 @@ public class MenuHandler {
             if (botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSES)) {
                 return showTransactionsHandler.selectSourceExpensesPeriod(chatId, (int) messageId, data);
             }
+            if (botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSES)) {
+                return showTransactionsHandler.selectSourceExpensesPeriod(chatId, (int) messageId, data);
+            }
+            if(botStateMenu.getBotState(chatId).equals(BotState.EDITTRANSACTION)){
+                switch (data){
+                case "editValue":
+                    return editTransactionHandler.editValue(chatId, (int) messageId);
+                case "editCategory":
+                    return editTransactionHandler.editCategory(chatId, (int) messageId);
+                case "editSource":
+                    return editTransactionHandler.editSource(chatId, (int) messageId);
+                case "editDate":
+                    return null;
 
-
+                }
+            }
+            if(botStateMenu.getBotState(chatId).equals(BotState.CHOOSECATEGORYEDITTRANSACTION)){
+                return editTransactionHandler.addCategory(chatId, (int) messageId, data);
+            }
+            if(botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEDITTRANSACTION)){
+                return editTransactionHandler.addSource(chatId, (int) messageId, data);
+            }
             if (botStateMenu.getBotState(chatId).equals(BotState.SHOWEXPENSES)
                     || botStateMenu.getBotState(chatId).equals(BotState.CHOOSECATEGORYEXPENSESPERIOD)
                     || botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSESPERIOD)) {
@@ -112,6 +135,8 @@ public class MenuHandler {
                 return showTransactionsHandler.showExpenses(chatId, (int) messageId);
             case "addExpense":
                 return addTransactionHandler.addExpenses(chatId, (int) messageId);
+            case "editExpense":
+                return editTransactionHandler.editExpense(chatId, (int) messageId);
             case "test":
                 return showTransactionsHandler.test(chatId, (int) messageId);
             default:
@@ -126,17 +151,32 @@ public class MenuHandler {
                 .text("Wrong command")
                 .build();
 
-        if (botStateMenu.getBotState(chatId) == BotState.ADDVALUE) {
+
             try {
-                Transaction transaction = new Transaction();
-                transaction.setValue(Integer.parseInt(message.getText()));
-                transactionState.changeTransactionState(chatId, transaction);
-                sendMessageText = addTransactionHandler.showCategory(chatId);
-            } catch (NumberFormatException e) {
+                if (botStateMenu.getBotState(chatId).equals(BotState.ADDVALUE))
+                {
+                    sendMessageText = addTransactionHandler.addValue(chatId, message);
+                }
+                if (botStateMenu.getBotState(chatId).equals(BotState.EDITEXPENSEADDVALUE))
+                {
+                    sendMessageText = editTransactionHandler.findTransaction(message);
+                }
+                if (botStateMenu.getBotState(chatId).equals(BotState.ADDVALUEEDITTRANSACTION))
+                {
+                    sendMessageText = editTransactionHandler.addValue(message);
+                }
+            } catch (NumberFormatException | TransactionNullValueException e) {
                 sendMessageText.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getHomeKeyboard()).build());
-                sendMessageText.setText("Type a number!");
+                if (e.getClass().equals(NumberFormatException.class)) {
+                    sendMessageText.setText("Type a number!");
+                } else if (e.getClass().equals(TransactionNullValueException.class)) {
+                    sendMessageText.setText(e.getMessage());
+                }
+
             }
-        }
+
+
+
 
         return sendMessageText;
     }

@@ -140,6 +140,7 @@ public enum Emoji {
 
     // Others
     LEFT_RIGHT_ARROW(null, '\u2194'),
+    CREDIT_CARD('\uD83D', '\uDCB3'),
     ALARM_CLOCK(null, '\u23F0'),
     SOON_WITH_RIGHTWARDS_ARROW_ABOVE('\uD83D', '\uDD1C'),
     EARTH_GLOBE_EUROPE_AFRICA('\uD83C', '\uDF0D'),
@@ -160,7 +161,9 @@ public enum Emoji {
     ROUND_PUSHPIN('\uD83D', '\uDCCD'),
     WAVING_HAND_SIGN('\uD83D', '\uDC4B'),
     CANCELLATION_X('\uD83D', '\uDDD9'),
-    MONEY_WITH_WINGS('\uD83D', '\uDCB8');
+    MONEY_WITH_WINGS('\uD83D', '\uDCB8'),
+    CALENDAR('\uD83D', '\uDCC5'),
+    MONEY_BUG('\uD83D', '\uDCB0');
 
 
     Character firstChar;

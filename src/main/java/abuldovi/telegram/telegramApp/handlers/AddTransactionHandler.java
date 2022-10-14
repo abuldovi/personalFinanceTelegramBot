@@ -8,6 +8,7 @@ import abuldovi.telegram.telegramApp.util.TransactionState;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -28,6 +29,17 @@ public class AddTransactionHandler {
         this.keyboards = keyboards;
     }
 
+    public SendMessage addValue(long chatId, Message message){
+
+
+            Transaction transaction = new Transaction();
+            transaction.setValue(Integer.parseInt(message.getText()));
+            transactionState.changeTransactionState(chatId, transaction);
+        SendMessage sendMessageText = showCategory(chatId);
+
+
+        return sendMessageText;
+    }
 
     public EditMessageText addExpenses(long chatId, int messageId) {
 

@@ -29,6 +29,10 @@ public class TransactionService {
         return transactionRepository.getByYear(chatId, Integer.parseInt(string));
     }
 
+    public Transaction findByTransactionId(int transactionId, long chatId){
+        return transactionRepository.findFirstByTransactionIdAndChatId(transactionId, chatId);
+    }
+
     public List<Transaction> findByYearAndCategory(long chatId, String year, String category){
         return transactionRepository.getByYearAndByCategory(chatId, category, Integer.parseInt(year));
     }
@@ -91,6 +95,11 @@ public class TransactionService {
         transaction.setChatId(chatId);
         transaction.setTimestamp(LocalDateTime.now());
         System.out.println(transaction.getValue());
+        return transactionRepository.save(transaction);
+    }
+
+    @Transactional
+    public Transaction save(Transaction transaction){
         return transactionRepository.save(transaction);
     }
 

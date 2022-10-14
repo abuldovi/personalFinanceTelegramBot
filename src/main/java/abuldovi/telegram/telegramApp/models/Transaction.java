@@ -13,7 +13,7 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
-    private int transaction_id;
+    private int transactionId;
 
     @Column(name = "chat_id")
     private long chatId;
@@ -32,11 +32,11 @@ public class Transaction {
     private int value;
 
     public int getTransaction_id() {
-        return transaction_id;
+        return transactionId;
     }
 
     public void setTransaction_id(int transaction_id) {
-        this.transaction_id = transaction_id;
+        this.transactionId = transaction_id;
     }
 
     public long getChatId() {

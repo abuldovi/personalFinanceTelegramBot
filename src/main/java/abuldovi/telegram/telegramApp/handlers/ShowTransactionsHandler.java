@@ -289,5 +289,14 @@ public class ShowTransactionsHandler {
         return stringBuilder.toString();
     }
 
+    public String transactionStringBuilder(Transaction transaction) {
+        return "Transaction: " + transaction.getTransaction_id() +
+                "\nCategory: " + transaction.getCategory() +
+                "\nDate: " + transaction.getTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+                "\nSource: " + transaction.getSource() +
+                "\nValue: " + transaction.getValue() +
+                "\n------------------------\n";
+    }
+
 
 }
