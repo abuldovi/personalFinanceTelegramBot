@@ -14,6 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import java.time.format.DateTimeParseException;
+import java.util.regex.PatternSyntaxException;
+
 @Component
 public class MenuHandler {
 
@@ -25,9 +28,10 @@ public class MenuHandler {
 
     private final AddTransactionHandler addTransactionHandler;
     private final ShowTransactionsHandler showTransactionsHandler;
+    private final DeleteTransactionHandler deleteTransactionHandler;
 
     @Autowired
-    public MenuHandler(TransactionState transactionState, BotStateMenu botStateMenu, Keyboards keyboards, RequestState requestState, EditTransactionHandler editTransactionHandler, AddTransactionHandler addTransactionHandler, ShowTransactionsHandler showTransactionsHandler) {
+    public MenuHandler(TransactionState transactionState, BotStateMenu botStateMenu, Keyboards keyboards, RequestState requestState, EditTransactionHandler editTransactionHandler, AddTransactionHandler addTransactionHandler, ShowTransactionsHandler showTransactionsHandler, DeleteTransactionHandler deleteTransactionHandler) {
         this.transactionState = transactionState;
         this.botStateMenu = botStateMenu;
         this.keyboards = keyboards;
@@ -35,12 +39,13 @@ public class MenuHandler {
         this.editTransactionHandler = editTransactionHandler;
         this.addTransactionHandler = addTransactionHandler;
         this.showTransactionsHandler = showTransactionsHandler;
+        this.deleteTransactionHandler = deleteTransactionHandler;
     }
 
 
     public EditMessageText handleCallback(CallbackQuery callbackQuery) {
         long chatId = callbackQuery.getMessage().getChatId();
-        long messageId = callbackQuery.getMessage().getMessageId();
+        int messageId = callbackQuery.getMessage().getMessageId();
 
         String data = callbackQuery.getData();
 
@@ -87,16 +92,34 @@ public class MenuHandler {
             if (botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSES)) {
                 return showTransactionsHandler.selectSourceExpensesPeriod(chatId, (int) messageId, data);
             }
-            if(botStateMenu.getBotState(chatId).equals(BotState.EDITTRANSACTION)){
+            if(botStateMenu.getBotState(chatId).equals(BotState.EDITTRANSACTION)) {
+                switch (data) {
+                    case "editValue":
+                        return editTransactionHandler.editValue(chatId, (int) messageId);
+                    case "editCategory":
+                        return editTransactionHandler.editCategory(chatId, (int) messageId);
+                    case "editSource":
+                        return editTransactionHandler.editSource(chatId, (int) messageId);
+                    case "editDate":
+                        return editTransactionHandler.editDate(chatId, (int) messageId);
+
+                }
+            }
+            if(botStateMenu.getBotState(chatId).equals(BotState.DELETETRANSACTION)){
                 switch (data){
-                case "editValue":
-                    return editTransactionHandler.editValue(chatId, (int) messageId);
-                case "editCategory":
-                    return editTransactionHandler.editCategory(chatId, (int) messageId);
-                case "editSource":
-                    return editTransactionHandler.editSource(chatId, (int) messageId);
-                case "editDate":
-                    return null;
+                case "yesDelete":
+                    return deleteTransactionHandler.deleteMessageFinalYes(chatId, (int) messageId);
+                case "noDelete":
+                    return deleteTransactionHandler.deleteMessageFinalNo(chatId, messageId);
+
+                }
+            }
+            if(botStateMenu.getBotState(chatId).equals(BotState.DELETETRANSACTIONSTEP2)){
+                switch (data){
+                    case "yesDelete":
+                        return deleteTransactionHandler.deleteTransaction(chatId, messageId);
+                    case "noDelete":
+                        return deleteTransactionHandler.deleteMessageFinalNo(chatId, messageId);
 
                 }
             }
@@ -129,14 +152,14 @@ public class MenuHandler {
         }
 
         switch (data) {
-            case "start":
-                return addTransactionHandler.startEdit(chatId, (int) messageId);
             case "showExpense":
                 return showTransactionsHandler.showExpenses(chatId, (int) messageId);
             case "addExpense":
                 return addTransactionHandler.addExpenses(chatId, (int) messageId);
             case "editExpense":
                 return editTransactionHandler.editExpense(chatId, (int) messageId);
+            case "deleteExpense":
+                return deleteTransactionHandler.deleteStart(chatId, (int) messageId);
             case "test":
                 return showTransactionsHandler.test(chatId, (int) messageId);
             default:
@@ -165,13 +188,28 @@ public class MenuHandler {
                 {
                     sendMessageText = editTransactionHandler.addValue(message);
                 }
-            } catch (NumberFormatException | TransactionNullValueException e) {
+                if (botStateMenu.getBotState(chatId).equals(BotState.EDITDATEEDITTRANSACTION))
+                {
+                    sendMessageText = editTransactionHandler.addDate(message);
+                }
+                if (botStateMenu.getBotState(chatId).equals(BotState.DELETETRANSACTION))
+                {
+                    sendMessageText = deleteTransactionHandler.findTransaction(message);
+                }
+            } catch (NumberFormatException | TransactionNullValueException | PatternSyntaxException |
+                     DateTimeParseException e) {
                 sendMessageText.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getHomeKeyboard()).build());
                 if (e.getClass().equals(NumberFormatException.class)) {
                     sendMessageText.setText("Type a number!");
                 } else if (e.getClass().equals(TransactionNullValueException.class)) {
                     sendMessageText.setText(e.getMessage());
+                } else if (e.getClass().equals(PatternSyntaxException.class)) {
+                    sendMessageText.setText(e.getMessage());
+                } else if (e.getClass().equals(DateTimeParseException.class)) {
+                    sendMessageText.setText("Wrong day, month or year");
                 }
+
+
 
             }
 

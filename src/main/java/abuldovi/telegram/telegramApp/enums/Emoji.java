@@ -163,6 +163,7 @@ public enum Emoji {
     CANCELLATION_X('\uD83D', '\uDDD9'),
     MONEY_WITH_WINGS('\uD83D', '\uDCB8'),
     CALENDAR('\uD83D', '\uDCC5'),
+    BAR('\uD83D', '\uDCCA'),
     MONEY_BUG('\uD83D', '\uDCB0');
 
 

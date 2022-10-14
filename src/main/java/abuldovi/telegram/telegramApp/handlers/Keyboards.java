@@ -22,7 +22,7 @@ public class Keyboards {
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.MONEY_WITH_WINGS + " Show expenses").callbackData("showExpense").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.HEAVY_PLUS_SIGN + " Add expense").callbackData("addExpense").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.PENCIL + " Edit expense").callbackData("editExpense").build()));
-        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CROSS_MARK + " Delete expense").callbackData("editExpense").build()));
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CROSS_MARK + " Delete expense").callbackData("deleteExpense").build()));
 
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("test").callbackData("test").build()));
         return buttonList;
@@ -53,8 +53,21 @@ public class Keyboards {
 
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.MONEY_BUG + " Change value").callbackData("editValue").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CALENDAR + " Change date").callbackData("editDate").build()));
-        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("Change category").callbackData("editCategory").build()));
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.BAR + " Change category").callbackData("editCategory").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CREDIT_CARD + " Change source").callbackData("editSource").build()));
+
+        addHome();
+
+        return buttonList;
+    }
+
+    public List<List<InlineKeyboardButton>> getDeleteKeyboard() {
+
+        buttonList.clear();
+
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CROSS_MARK + " Yes").callbackData("yesDelete").build()));
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(" No").callbackData("noDelete").build()));
+
 
         addHome();
 

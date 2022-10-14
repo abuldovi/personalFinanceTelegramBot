@@ -14,7 +14,7 @@ public class BotStateMenu {
         if(!botStateMap.containsKey(chatId)){
             botStateMap.put(chatId, BotState.START);
         } else
-        botStateMap.replace(chatId, botState);
+            botStateMap.replace(chatId, botState);
     }
 
     public boolean containsChatId(long chatId) { return botStateMap.containsKey(chatId); }

@@ -21,6 +21,11 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
+    @Transactional
+    public void deleteTransaction(Transaction transaction){
+        transactionRepository.delete(transaction);
+    }
+
     public List<Transaction> findAll(long chatId){
         return transactionRepository.findAllByChatId(chatId);
     }

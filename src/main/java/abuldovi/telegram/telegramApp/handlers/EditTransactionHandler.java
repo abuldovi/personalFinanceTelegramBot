@@ -6,6 +6,7 @@ import abuldovi.telegram.telegramApp.models.Transaction;
 import abuldovi.telegram.telegramApp.service.TransactionService;
 import abuldovi.telegram.telegramApp.util.BotStateMenu;
 import abuldovi.telegram.telegramApp.util.TransactionState;
+import org.apache.logging.log4j.util.StringBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,7 +15,12 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 @Component
 public class EditTransactionHandler {
@@ -40,7 +46,7 @@ public class EditTransactionHandler {
 
         Transaction transaction = transactionService.findByTransactionId(Integer.parseInt(message.getText()), chatId);
 
-        if (transaction == null){
+        if (transaction == null) {
             throw new TransactionNullValueException("Incorrect Transaction ID");
         }
 
@@ -52,12 +58,12 @@ public class EditTransactionHandler {
                 .chatId(String.valueOf(chatId))
                 .replyMarkup(InlineKeyboardMarkup.builder()
                         .keyboard(keyboards.getEditKeyboard()).build())
-                        .text("What to change: \n\n" + showTransactionsHandler.transactionStringBuilder(transaction))
-                        .build();
+                .text("What to change: \n\n" + showTransactionsHandler.transactionStringBuilder(transaction))
+                .build();
 
     }
 
-    public SendMessage addValue(Message message){
+    public SendMessage addValue(Message message) {
         long chatId = message.getChatId();
 
         Transaction transaction = transactionState.getTransactionState(chatId);
@@ -74,6 +80,34 @@ public class EditTransactionHandler {
                 .build();
     }
 
+    public SendMessage addDate(Message message) {
+
+        String date = message.getText();
+
+        if(!date.matches("[0-3][0-9]\\/[0-1][0-9]\\/[2][0][0-9][0-9]")){
+                throw new PatternSyntaxException("Wrong date pattern, should be dd/mm/yyyy", "", -1);
+        }
+
+        long chatId = message.getChatId();
+
+        date +=" 00:00:00";
+
+        LocalDateTime localDateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+        Transaction transaction = transactionState.getTransactionState(chatId);
+        transaction.setTimestamp(localDateTime);
+        transactionService.save(transaction);
+
+        botStateMenu.changeBotState(chatId, BotState.EDITTRANSACTION);
+
+        return SendMessage.builder()
+                .chatId(chatId)
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboard(keyboards.getEditKeyboard()).build())
+                .text("Date has successfully changed \n\n" + showTransactionsHandler.transactionStringBuilder(transaction))
+                .build();
+    }
+
     public EditMessageText editExpense(long chatId, int messageId) {
 
         botStateMenu.changeBotState(chatId, BotState.EDITEXPENSEADDVALUE);
@@ -83,7 +117,7 @@ public class EditTransactionHandler {
     }
 
 
-    public EditMessageText editExpenseMenu(long chatId, int messageId, String resultMessage){
+    public EditMessageText editExpenseMenu(long chatId, int messageId, String resultMessage) {
 
         botStateMenu.changeBotState(chatId, BotState.EDITTRANSACTION);
 
@@ -91,7 +125,7 @@ public class EditTransactionHandler {
     }
 
 
-    public EditMessageText editValue(long chatId, int messageId){
+    public EditMessageText editValue(long chatId, int messageId) {
 
         botStateMenu.changeBotState(chatId, BotState.ADDVALUEEDITTRANSACTION);
         String value = String.valueOf(transactionState.getTransactionState(chatId).getValue());
@@ -100,14 +134,14 @@ public class EditTransactionHandler {
     }
 
 
-    public EditMessageText editCategory(long chatId, int messageId){
+    public EditMessageText editCategory(long chatId, int messageId) {
 
         botStateMenu.changeBotState(chatId, BotState.CHOOSECATEGORYEDITTRANSACTION);
 
         return editMessageTextBuilder(chatId, messageId, "Choose category \n Current state:" + transactionState.getTransactionState(chatId).getCategory(), keyboards.getCategoryKeyboard());
     }
 
-    public EditMessageText addCategory(long chatId, int messageId, String category){
+    public EditMessageText addCategory(long chatId, int messageId, String category) {
 
         botStateMenu.changeBotState(chatId, BotState.EDITTRANSACTION);
 
@@ -119,15 +153,14 @@ public class EditTransactionHandler {
     }
 
 
-
-    public EditMessageText editSource(long chatId, int messageId){
+    public EditMessageText editSource(long chatId, int messageId) {
 
         botStateMenu.changeBotState(chatId, BotState.CHOOSESOURCEEDITTRANSACTION);
 
         return editMessageTextBuilder(chatId, messageId, "Choose source \n Current state:" + transactionState.getTransactionState(chatId).getSource(), keyboards.getSourceKeyboard());
     }
 
-    public EditMessageText addSource(long chatId, int messageId, String source){
+    public EditMessageText addSource(long chatId, int messageId, String source) {
 
         botStateMenu.changeBotState(chatId, BotState.EDITTRANSACTION);
 
@@ -138,16 +171,14 @@ public class EditTransactionHandler {
         return editExpenseMenu(chatId, messageId, "Source has successfully changed \n\n" + showTransactionsHandler.transactionStringBuilder(transaction));
     }
 
-    public EditMessageText editDate(Message message, String resultMessage){
-        long chatId = message.getChatId();
-        int messageId = message.getMessageId();
+    public EditMessageText editDate(long chatId, int messageId) {
 
-        botStateMenu.changeBotState(chatId, BotState.EDITTRANSACTION);
+        botStateMenu.changeBotState(chatId, BotState.EDITDATEEDITTRANSACTION);
 
-        return editMessageTextBuilder(chatId, messageId, resultMessage, keyboards.getEditKeyboard());
+        String timestamp = transactionState.getTransactionState(chatId).getTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        return editMessageTextBuilder(chatId, messageId, "Current value: " + timestamp + "\n\n Type your date in a form dd/mm/yyyy", keyboards.getHomeKeyboard());
     }
-
-
 
 
     public EditMessageText editMessageTextBuilder(long chatId, int messageId, String text, List<List<InlineKeyboardButton>> keyboard) {
@@ -155,5 +186,6 @@ public class EditTransactionHandler {
         return EditMessageText.builder().chatId(String.valueOf(chatId)).messageId(messageId).text(text).replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboard).build()).build();
 
     }
+
 
 }

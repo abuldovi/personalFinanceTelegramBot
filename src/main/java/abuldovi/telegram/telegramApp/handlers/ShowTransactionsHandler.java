@@ -250,9 +250,6 @@ public class ShowTransactionsHandler {
         Integer sum = transactionService.getSumByMonthAndByYearAndSource(chatId, month, year, source);
         List<Transaction> transactions = transactionService.getByMonthAndByYearAndSource(chatId, month, year, source);
 
-        System.out.println("sadasd" + transactions.size());
-        System.out.println("sum" + sum);
-
         if (transactions.isEmpty()) {
             message = "There is no transaction in this month";
         } else message = transactionStringBuilder(transactions, sum);
