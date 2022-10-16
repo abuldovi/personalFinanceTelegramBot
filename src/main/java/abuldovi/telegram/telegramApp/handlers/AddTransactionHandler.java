@@ -35,17 +35,16 @@ public class AddTransactionHandler {
             Transaction transaction = new Transaction();
             transaction.setValue(Integer.parseInt(message.getText()));
             transactionState.changeTransactionState(chatId, transaction);
-        SendMessage sendMessageText = showCategory(chatId);
 
 
-        return sendMessageText;
+        return showCategory(chatId);
     }
 
     public EditMessageText addExpenses(long chatId, int messageId) {
 
         botStateMenu.changeBotState(chatId, BotState.ADDVALUE);
 
-        return editMessageTextBuilder(chatId, messageId, "Please enter the number", keyboards.getHomeKeyboard());
+        return editMessageTextBuilder(chatId, messageId, "How much have you spent?", keyboards.getHomeKeyboard());
 
     }
 

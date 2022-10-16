@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -96,16 +94,16 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction save(long chatId, Transaction transaction){
+    public void save(long chatId, Transaction transaction){
         transaction.setChatId(chatId);
         transaction.setTimestamp(LocalDateTime.now());
         System.out.println(transaction.getValue());
-        return transactionRepository.save(transaction);
+        transactionRepository.save(transaction);
     }
 
     @Transactional
-    public Transaction save(Transaction transaction){
-        return transactionRepository.save(transaction);
+    public void save(Transaction transaction){
+        transactionRepository.save(transaction);
     }
 
 

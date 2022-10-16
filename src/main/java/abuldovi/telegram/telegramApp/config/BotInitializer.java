@@ -26,6 +26,7 @@ public class BotInitializer {
             try{
                 telegramBotsApi.registerBot((LongPollingBot) telegramBot);
             } catch(TelegramApiException e){
+                e.getStackTrace();
             }
         }
     }

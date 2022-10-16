@@ -62,7 +62,7 @@ public class DeleteTransactionHandler {
 
         botStateMenu.changeBotState(chatId, BotState.DELETETRANSACTION);
 
-        return editMessageTextBuilder(chatId, messageId, "Type the transaction you want to delete", keyboards.getHomeKeyboard());
+        return editMessageTextBuilder(chatId, messageId, "Type the id of transaction you want to delete", keyboards.getHomeKeyboard());
 
     }
 

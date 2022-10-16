@@ -12,9 +12,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.regex.PatternSyntaxException;
 
 @Component
@@ -45,13 +47,13 @@ public class MenuHandler {
 
     public EditMessageText handleCallback(CallbackQuery callbackQuery) {
         long chatId = callbackQuery.getMessage().getChatId();
-        int messageId = callbackQuery.getMessage().getMessageId();
+       int messageId = callbackQuery.getMessage().getMessageId();
 
         String data = callbackQuery.getData();
 
         if (data.equals("cancel")) {
             transactionState.removeTransactionState(chatId);
-            return addTransactionHandler.startEdit(chatId, (int) messageId);
+            return addTransactionHandler.startEdit(chatId,  messageId);
         }
 
         if (botStateMenu.containsChatId(chatId)) {
@@ -59,56 +61,56 @@ public class MenuHandler {
                 Transaction transaction = transactionState.getTransactionState(chatId);
                 transaction.setCategory(callbackQuery.getData());
                 transactionState.changeTransactionState(chatId, transaction);
-                return addTransactionHandler.showSource(chatId, (int) messageId);
+                return addTransactionHandler.showSource(chatId,  messageId);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.ADDSOURCE)) {
                 Transaction transaction = transactionState.getTransactionState(chatId);
                 transaction.setSource(callbackQuery.getData());
                 transactionState.changeTransactionState(chatId, transaction);
-                return addTransactionHandler.addSource(chatId, (int) messageId);
+                return addTransactionHandler.addSource(chatId,  messageId);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.SELECTDIFMONTH)
                     || botStateMenu.getBotState(chatId).equals(BotState.CATEGORYSELECTDIFMONTH)
                     || botStateMenu.getBotState(chatId).equals(BotState.SOURCESELECTDIFMONTH)) {
                 requestState.changeRequestYear(chatId, data);
-                return showTransactionsHandler.showMonth(chatId, (int) messageId, data);
+                return showTransactionsHandler.showMonth(chatId,  messageId, data);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.SELECTMONTH)
                     || botStateMenu.getBotState(chatId).equals(BotState.CATEGORYSELECTMONTH)
                     || botStateMenu.getBotState(chatId).equals(BotState.SOURCESELECTMONTH)) {
-                return showTransactionsHandler.showMonthResult(chatId, (int) messageId, data, requestState.getRequest(chatId).getYear());
+                return showTransactionsHandler.showMonthResult(chatId,  messageId, data, requestState.getRequest(chatId).getYear());
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.SHOWYEARS)
                     || botStateMenu.getBotState(chatId).equals(BotState.CATEGORYSHOWYEARS)
                     || botStateMenu.getBotState(chatId).equals(BotState.SOURCESHOWYEARS)) {
-                return showTransactionsHandler.selectYear(chatId, (int) messageId, data);
+                return showTransactionsHandler.selectYear(chatId,  messageId, data);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.CHOOSECATEGORYEXPENSES)) {
-                return showTransactionsHandler.selectCategoryExpensesPeriod(chatId, (int) messageId, data);
+                return showTransactionsHandler.selectCategoryExpensesPeriod(chatId,  messageId, data);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSES)) {
-                return showTransactionsHandler.selectSourceExpensesPeriod(chatId, (int) messageId, data);
+                return showTransactionsHandler.selectSourceExpensesPeriod(chatId,  messageId, data);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSES)) {
-                return showTransactionsHandler.selectSourceExpensesPeriod(chatId, (int) messageId, data);
+                return showTransactionsHandler.selectSourceExpensesPeriod(chatId,  messageId, data);
             }
             if(botStateMenu.getBotState(chatId).equals(BotState.EDITTRANSACTION)) {
                 switch (data) {
                     case "editValue":
-                        return editTransactionHandler.editValue(chatId, (int) messageId);
+                        return editTransactionHandler.editValue(chatId,  messageId);
                     case "editCategory":
-                        return editTransactionHandler.editCategory(chatId, (int) messageId);
+                        return editTransactionHandler.editCategory(chatId,  messageId);
                     case "editSource":
-                        return editTransactionHandler.editSource(chatId, (int) messageId);
+                        return editTransactionHandler.editSource(chatId,  messageId);
                     case "editDate":
-                        return editTransactionHandler.editDate(chatId, (int) messageId);
+                        return editTransactionHandler.editDate(chatId,  messageId);
 
                 }
             }
             if(botStateMenu.getBotState(chatId).equals(BotState.DELETETRANSACTION)){
                 switch (data){
                 case "yesDelete":
-                    return deleteTransactionHandler.deleteMessageFinalYes(chatId, (int) messageId);
+                    return deleteTransactionHandler.deleteMessageFinalYes(chatId,  messageId);
                 case "noDelete":
                     return deleteTransactionHandler.deleteMessageFinalNo(chatId, messageId);
 
@@ -124,46 +126,46 @@ public class MenuHandler {
                 }
             }
             if(botStateMenu.getBotState(chatId).equals(BotState.CHOOSECATEGORYEDITTRANSACTION)){
-                return editTransactionHandler.addCategory(chatId, (int) messageId, data);
+                return editTransactionHandler.addCategory(chatId,  messageId, data);
             }
             if(botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEDITTRANSACTION)){
-                return editTransactionHandler.addSource(chatId, (int) messageId, data);
+                return editTransactionHandler.addSource(chatId,  messageId, data);
             }
             if (botStateMenu.getBotState(chatId).equals(BotState.SHOWEXPENSES)
                     || botStateMenu.getBotState(chatId).equals(BotState.CHOOSECATEGORYEXPENSESPERIOD)
                     || botStateMenu.getBotState(chatId).equals(BotState.CHOOSESOURCEEXPENSESPERIOD)) {
                 switch (data) {
                     case "yearly":
-                        return showTransactionsHandler.showYearsExpenses(chatId, (int) messageId);
+                        return showTransactionsHandler.showYearsExpenses(chatId,  messageId);
                     case "thisMonth":
-                        return showTransactionsHandler.showThisMonth(chatId, (int) messageId);
+                        return showTransactionsHandler.showThisMonth(chatId,  messageId);
                     case "difMonth":
-                        return showTransactionsHandler.showDifferentMonthYears(chatId, (int) messageId);
+                        return showTransactionsHandler.showDifferentMonthYears(chatId,  messageId);
                     case "category":
-                        return showTransactionsHandler.showCategoryExpense(chatId, (int) messageId);
+                        return showTransactionsHandler.showCategoryExpense(chatId,  messageId);
                     case "source":
-                        return showTransactionsHandler.showSourceExpense(chatId, (int) messageId);
+                        return showTransactionsHandler.showSourceExpense(chatId,  messageId);
                     case "test":
-                        return showTransactionsHandler.test(chatId, (int) messageId);
+                        return showTransactionsHandler.test(chatId,  messageId);
                 }
 
-                return addTransactionHandler.addSource(chatId, (int) messageId);
+                return addTransactionHandler.addSource(chatId,  messageId);
             }
         }
 
         switch (data) {
             case "showExpense":
-                return showTransactionsHandler.showExpenses(chatId, (int) messageId);
+                return showTransactionsHandler.showExpenses(chatId,  messageId);
             case "addExpense":
-                return addTransactionHandler.addExpenses(chatId, (int) messageId);
+                return addTransactionHandler.addExpenses(chatId,  messageId);
             case "editExpense":
-                return editTransactionHandler.editExpense(chatId, (int) messageId);
+                return editTransactionHandler.editExpense(chatId,  messageId);
             case "deleteExpense":
-                return deleteTransactionHandler.deleteStart(chatId, (int) messageId);
+                return deleteTransactionHandler.deleteStart(chatId,  messageId);
             case "test":
-                return showTransactionsHandler.test(chatId, (int) messageId);
+                return showTransactionsHandler.test(chatId,  messageId);
             default:
-                return EditMessageText.builder().chatId(chatId).messageId((int) messageId).text("Smth wrong").build();
+                return EditMessageText.builder().chatId(chatId).messageId( messageId).text("Wrong command, try again").build();
         }
     }
 
@@ -219,17 +221,37 @@ public class MenuHandler {
         return sendMessageText;
     }
 
-    public SendMessage start(long chatId) {
+    public SendMessage menu(long chatId) {
 
         SendMessage message = SendMessage.builder()
                 .chatId(String.valueOf(chatId))
-                .text("Choose the option")
+                .entities(Collections.singletonList(MessageEntity.builder().offset(0).type("bold").length(9).build()))
+                .text("Main menu")
                 .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboards.getStartKeyboard()).build())
+                .build();
+
+
+        botStateMenu.changeBotState(chatId, BotState.START);
+
+        return message;
+
+    }
+
+    public SendMessage start(long chatId, String name) {
+
+        String text = "Hello, " + name + "!" +
+                "\n\nThis is your personal expense tracker." +
+                "\nJust open the menu in the bottom left corner or type /set_finance and take full control of your expenses!" +
+                "\n\nGood luck!";
+
+
+        SendMessage message = SendMessage.builder()
+                .chatId(String.valueOf(chatId))
+                .text(text)
                 .build();
 
         botStateMenu.changeBotState(chatId, BotState.START);
 
-        System.out.println(botStateMenu.getBotState(chatId));
         return message;
 
     }

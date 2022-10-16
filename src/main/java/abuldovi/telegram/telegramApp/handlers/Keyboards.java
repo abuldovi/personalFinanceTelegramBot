@@ -24,7 +24,6 @@ public class Keyboards {
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.PENCIL + " Edit expense").callbackData("editExpense").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CROSS_MARK + " Delete expense").callbackData("deleteExpense").build()));
 
-        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("test").callbackData("test").build()));
         return buttonList;
     }
 
@@ -37,7 +36,7 @@ public class Keyboards {
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("This month").callbackData("thisMonth").build()));
 
         if(!shortVersion){
-        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text("By category").callbackData("category").build()));
+        buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.BAR + " By category").callbackData("category").build()));
         buttonList.add(Collections.singletonList(InlineKeyboardButton.builder().text(Emoji.CREDIT_CARD + " By source").callbackData("source").build()));
         }
 
@@ -98,7 +97,7 @@ public class Keyboards {
         buttonList.clear();
 
         for(Source source: Source.values()){
-            buttonList.add(Arrays.asList(InlineKeyboardButton.builder()
+            buttonList.add(Collections.singletonList(InlineKeyboardButton.builder()
                     .text(source.label)
                     .callbackData(source.name())
                     .build()));
@@ -114,7 +113,7 @@ public class Keyboards {
         buttonList.clear();
 
         for(Integer year: years){
-            buttonList.add(Arrays.asList(InlineKeyboardButton.builder()
+            buttonList.add(Collections.singletonList(InlineKeyboardButton.builder()
                     .text(year.toString())
                     .callbackData(year.toString())
                     .build()));
@@ -132,8 +131,8 @@ public class Keyboards {
 
 
         for(Integer month: months){
-            buttonList.add(Arrays.asList(InlineKeyboardButton.builder()
-                    .text(Month.of(month).getDisplayName( TextStyle.FULL, Locale.ENGLISH))
+            buttonList.add(Collections.singletonList(InlineKeyboardButton.builder()
+                    .text(Month.of(month).getDisplayName(TextStyle.FULL, Locale.ENGLISH))
                     .callbackData(month.toString())
                     .build()));
         }
